@@ -32,9 +32,13 @@ function createUser(request, response) {
 
 function updateUser(request, response) {
   const { userID } = request.params;
-  const updateValues = request.body;
+  const newValues = request.body;
+  const updateOptions = {
+    new: true,
+    runValidators: true,
+  };
 
-  User.findByIdAndUpdate(userID, updateValues, { new: true }, (error, updatedUser) => {
+  User.findByIdAndUpdate(userID, newValues, updateOptions, (error, updatedUser) => {
     if (error) return response.status(400).send({ message: 'Error updating user', error });
 
     return response.status(200).send([updatedUser]);
@@ -42,7 +46,7 @@ function updateUser(request, response) {
 }
 
 function deleteUser(request, response) {
-  const { userID } = request.body;
+  const { userID } = request.params;
 
   User.findByIdAndDelete(userID, (error, deletedUser) => {
     if (error) return response.status(400).send({ message: 'Error deleting user', error });
@@ -51,16 +55,20 @@ function deleteUser(request, response) {
   });
 }
 
-// TODO
 function login(request, response) {
   const { email } = request.body;
   const { password } = request.body;
+  let match = false;
 
   User.findOne({ email }, (error, user) => {
     if (error) return response.status(400).send({ error });
+    if (!user) return response.status(401).send({ message: 'Authentication error' });
 
-    if (user.password === password) return response.status(200).send({ message: 'correct password' });
-    return response.status(401).send({ message: 'Incorrect password' });
+    match = user.comparePassword(password);
+
+    if (!match) return response.status(401).send({ message: 'Authentication error' });
+
+    return response.status(200).send([user]);
   });
 }
 

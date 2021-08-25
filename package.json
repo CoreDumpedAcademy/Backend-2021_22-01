@@ -1,16 +1,18 @@
 {
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "nodemon ./API/server.js"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "mongoose": "^5.13.3"
+    "mongoose": "^5.13.3",
+    "supertest": "^6.1.6"
   },
   "devDependencies": {
     "eslint": "^7.31.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4",
+    "jest": "^27.0.6",
     "nodemon": "^2.0.12"
   }
 }

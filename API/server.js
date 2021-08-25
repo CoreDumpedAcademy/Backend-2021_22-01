@@ -12,3 +12,5 @@ mongoose.connect(mongodb, { useNewUrlParser: true, useUnifiedTopology: true }, (
   if (err) console.log(`ERROR: connecting to Database. ${err}`);
   else app.listen(port, console.log(`API started on: http://localhost:${port}`));
 });
+
+module.exports = app;
