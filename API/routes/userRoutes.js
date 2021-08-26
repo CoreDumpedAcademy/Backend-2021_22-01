@@ -4,8 +4,8 @@ const userController = require('../controllers/userController');
 
 const router = Router();
 
-router.get('/', auth.isSuperUser, userController.getUsers);
-router.get('/:userID', auth.isSuperUser, userController.getUserById);
+router.get('/', auth.isLoggedIn, auth.isSuperUser, userController.getUsers);
+router.get('/:userID', auth.isLoggedIn, auth.isSuperUser, userController.getUserById);
 router.post('/', userController.createUser);
 router.post('/login', userController.login);
 router.patch('/:userID', auth.isLoggedIn, userController.updateUser);

@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const token = require('../services/token');
 
 function getUsers(request, response) {
   const selection = request.body;
@@ -16,7 +17,7 @@ function getUserById(request, response) {
   User.findById(userID, (error, user) => {
     if (error) return response.status(400).send({ message: 'No user found', error });
 
-    return response.status(200).send([user]);
+    return response.status(200).send(user);
   });
 }
 
@@ -26,22 +27,23 @@ function createUser(request, response) {
   user.save((error, newUser) => {
     if (error) return response.status(400).send({ message: 'Error saving user', error });
 
-    return response.status(200).send([newUser]);
+    return response.status(200).send(newUser);
   });
 }
 
 function updateUser(request, response) {
   const { userID } = request.params;
   const newValues = request.body;
+
   const updateOptions = {
-    new: true,
     runValidators: true,
+    strict: true,
   };
 
   User.findByIdAndUpdate(userID, newValues, updateOptions, (error, updatedUser) => {
     if (error) return response.status(400).send({ message: 'Error updating user', error });
 
-    return response.status(200).send([updatedUser]);
+    return response.status(200).send(updatedUser);
   });
 }
 
@@ -51,24 +53,28 @@ function deleteUser(request, response) {
   User.findByIdAndDelete(userID, (error, deletedUser) => {
     if (error) return response.status(400).send({ message: 'Error deleting user', error });
 
-    return response.status(200).send([deletedUser]);
+    return response.status(200).send(deletedUser);
   });
 }
 
 function login(request, response) {
   const { email } = request.body;
   const { password } = request.body;
+
   let match = false;
+  let userToken = '';
 
   User.findOne({ email }, (error, user) => {
     if (error) return response.status(400).send({ error });
-    if (!user) return response.status(401).send({ message: 'Authentication error' });
+    if (!user) return response.status(403).send({ message: 'Authentication error' });
 
     match = user.comparePassword(password);
 
-    if (!match) return response.status(401).send({ message: 'Authentication error' });
+    if (!match) return response.status(403).send({ message: 'Authentication error' });
 
-    return response.status(200).send([user]);
+    userToken = token.createToken(user);
+
+    return response.status(200).send({ user, userToken });
   });
 }
 
