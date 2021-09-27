@@ -9,7 +9,7 @@ const options = {
   Allow: 'GET, POST, OPTIONS, PUT, DELETE',
 };
 
-app.use((request, response, next) => {
+app.use((response, next) => {
   response.header(options);
   next();
 });
